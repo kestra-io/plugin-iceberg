@@ -1,10 +1,10 @@
 {
-  "name": "plugin-template",
+  "name": "plugin-iceberg",
   "build": {
     "context": ".",
     "dockerfile": "Dockerfile"
   },
-  "workspaceFolder": "/workspaces/plugin-template",
+  "workspaceFolder": "/workspaces/plugin-iceberg",
   "forwardPorts": [8080],
   "customizations": {
     "vscode": {
