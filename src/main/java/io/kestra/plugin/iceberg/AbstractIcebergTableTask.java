@@ -10,16 +10,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.apache.iceberg.Table;
-import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
 
-import java.util.Arrays;
-
 /**
  * Shared base task for Apache Iceberg table-level tasks.
- * Manages namespace and table name resolution, table identifiers, and table loading.
+ * Manages namespace and table name resolution and table identifiers.
  */
 @SuperBuilder
 @ToString
@@ -52,30 +48,18 @@ public abstract class AbstractIcebergTableTask extends AbstractIcebergTask {
      * @return The Iceberg TableIdentifier
      */
     protected TableIdentifier tableIdentifier(RunContext runContext) throws Exception {
-        String renderedNs = runContext.render(namespace).as(String.class).orElseThrow(
+        var rNamespace = runContext.render(namespace).as(String.class).orElseThrow(
             () -> new IllegalArgumentException("'namespace' must not be null or empty.")
         );
-        String renderedTable = runContext.render(tableName).as(String.class).orElseThrow(
+        var rTableName = runContext.render(tableName).as(String.class).orElseThrow(
             () -> new IllegalArgumentException("'tableName' must not be null or empty.")
         );
 
-        Namespace ns = parseNamespace(renderedNs);
+        var ns = parseNamespace(rNamespace);
         if (ns.isEmpty()) {
-            throw new IllegalArgumentException("Invalid namespace: '" + renderedNs + "'. Must contain at least one non-empty level.");
+            throw new IllegalArgumentException("Invalid namespace: '" + rNamespace + "'. Must contain at least one non-empty level.");
         }
 
-        return TableIdentifier.of(ns, renderedTable.trim());
-    }
-
-    /**
-     * Loads the target Iceberg Table from the initialized catalog.
-     *
-     * @param runContext The current Kestra RunContext
-     * @param catalog    The initialized Iceberg Catalog
-     * @return The loaded Iceberg Table instance
-     */
-    protected Table loadTable(RunContext runContext, Catalog catalog) throws Exception {
-        TableIdentifier identifier = tableIdentifier(runContext);
-        return catalog.loadTable(identifier);
+        return TableIdentifier.of(ns, rTableName.trim());
     }
 }

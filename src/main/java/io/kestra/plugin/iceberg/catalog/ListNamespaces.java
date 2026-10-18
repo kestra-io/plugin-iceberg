@@ -74,25 +74,25 @@ public class ListNamespaces extends AbstractIcebergTask implements RunnableTask<
 
     @Override
     public ListNamespaces.Output run(RunContext runContext) throws Exception {
-        Namespace parentNs = Namespace.empty();
+        var parentNs = Namespace.empty();
         if (namespace != null) {
-            String rendered = runContext.render(namespace).as(String.class).orElse(null);
-            if (rendered != null && !rendered.trim().isEmpty()) {
-                parentNs = parseNamespace(rendered);
+            var rNamespace = runContext.render(namespace).as(String.class).orElse(null);
+            if (rNamespace != null && !rNamespace.trim().isEmpty()) {
+                parentNs = parseNamespace(rNamespace);
             }
         }
 
-        Catalog catalog = catalog(runContext);
+        var catalog = catalog(runContext);
         try {
-            SupportsNamespaces namespaceCatalog = asSupportsNamespaces(catalog);
+            var namespaceCatalog = asSupportsNamespaces(catalog);
 
-            List<Namespace> namespaces = parentNs.isEmpty()
+            var namespaces = parentNs.isEmpty()
                 ? namespaceCatalog.listNamespaces()
                 : namespaceCatalog.listNamespaces(parentNs);
 
-            List<String> result = namespaces != null
+            var result = namespaces != null
                 ? namespaces.stream().map(Namespace::toString).sorted().toList()
-                : Collections.emptyList();
+                : Collections.<String>emptyList();
 
             runContext.logger().info("Found {} namespaces under '{}'", result.size(), parentNs);
 

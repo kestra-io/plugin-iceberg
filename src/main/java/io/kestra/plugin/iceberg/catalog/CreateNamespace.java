@@ -78,23 +78,23 @@ public class CreateNamespace extends AbstractIcebergTask implements RunnableTask
 
     @Override
     public CreateNamespace.Output run(RunContext runContext) throws Exception {
-        String renderedNs = runContext.render(namespace).as(String.class).orElseThrow(
+        var rNamespace = runContext.render(namespace).as(String.class).orElseThrow(
             () -> new IllegalArgumentException("'namespace' must not be null or empty.")
         );
-        Namespace ns = parseNamespace(renderedNs);
+        var ns = parseNamespace(rNamespace);
         if (ns.isEmpty()) {
-            throw new IllegalArgumentException("Invalid namespace: '" + renderedNs + "'. Must contain at least one non-empty level.");
+            throw new IllegalArgumentException("Invalid namespace: '" + rNamespace + "'. Must contain at least one non-empty level.");
         }
 
-        Map<String, String> renderedProps = properties != null
+        var rProperties = properties != null
             ? runContext.render(properties).asMap(String.class, String.class)
-            : Collections.emptyMap();
+            : Collections.<String, String>emptyMap();
 
-        boolean skipIfExists = runContext.render(ifNotExists).as(Boolean.class).orElse(true);
+        var skipIfExists = runContext.render(ifNotExists).as(Boolean.class).orElse(true);
 
-        Catalog catalog = catalog(runContext);
+        var catalog = catalog(runContext);
         try {
-            SupportsNamespaces namespaceCatalog = asSupportsNamespaces(catalog);
+            var namespaceCatalog = asSupportsNamespaces(catalog);
 
             if (namespaceCatalog.namespaceExists(ns)) {
                 if (!skipIfExists) {
@@ -109,12 +109,12 @@ public class CreateNamespace extends AbstractIcebergTask implements RunnableTask
             }
 
             runContext.logger().info("Creating Iceberg namespace '{}'", ns);
-            namespaceCatalog.createNamespace(ns, renderedProps != null ? renderedProps : Collections.emptyMap());
+            namespaceCatalog.createNamespace(ns, rProperties != null ? rProperties : Collections.emptyMap());
 
             return Output.builder()
                 .namespace(ns.toString())
                 .created(true)
-                .properties(renderedProps != null ? renderedProps : Collections.emptyMap())
+                .properties(rProperties != null ? rProperties : Collections.emptyMap())
                 .build();
         } finally {
             closeCatalog(catalog, runContext.logger());

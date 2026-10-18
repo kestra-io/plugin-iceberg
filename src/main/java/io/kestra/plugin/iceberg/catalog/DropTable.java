@@ -89,11 +89,11 @@ public class DropTable extends AbstractIcebergTableTask implements RunnableTask<
 
     @Override
     public DropTable.Output run(RunContext runContext) throws Exception {
-        TableIdentifier identifier = tableIdentifier(runContext);
-        boolean skipIfNotExists = runContext.render(ifExists).as(Boolean.class).orElse(true);
-        boolean purgeData = runContext.render(purge).as(Boolean.class).orElse(false);
+        var identifier = tableIdentifier(runContext);
+        var skipIfNotExists = runContext.render(ifExists).as(Boolean.class).orElse(true);
+        var purgeData = runContext.render(purge).as(Boolean.class).orElse(false);
 
-        Catalog catalog = catalog(runContext);
+        var catalog = catalog(runContext);
         try {
             if (!catalog.tableExists(identifier)) {
                 if (!skipIfNotExists) {
@@ -107,7 +107,7 @@ public class DropTable extends AbstractIcebergTableTask implements RunnableTask<
             }
 
             runContext.logger().info("Dropping Iceberg table '{}' (purge={})", identifier, purgeData);
-            boolean dropped = catalog.dropTable(identifier, purgeData);
+            var dropped = catalog.dropTable(identifier, purgeData);
 
             return Output.builder()
                 .table(identifier.toString())

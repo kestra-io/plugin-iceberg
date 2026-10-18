@@ -81,20 +81,20 @@ public class DropNamespace extends AbstractIcebergTask implements RunnableTask<D
 
     @Override
     public DropNamespace.Output run(RunContext runContext) throws Exception {
-        String renderedNs = runContext.render(namespace).as(String.class).orElseThrow(
+        var rNamespace = runContext.render(namespace).as(String.class).orElseThrow(
             () -> new IllegalArgumentException("'namespace' must not be null or empty.")
         );
-        Namespace ns = parseNamespace(renderedNs);
+        var ns = parseNamespace(rNamespace);
         if (ns.isEmpty()) {
-            throw new IllegalArgumentException("Invalid namespace: '" + renderedNs + "'. Must contain at least one non-empty level.");
+            throw new IllegalArgumentException("Invalid namespace: '" + rNamespace + "'. Must contain at least one non-empty level.");
         }
 
-        boolean skipIfNotExists = runContext.render(ifExists).as(Boolean.class).orElse(true);
-        boolean cascadeDrop = runContext.render(cascade).as(Boolean.class).orElse(false);
+        var skipIfNotExists = runContext.render(ifExists).as(Boolean.class).orElse(true);
+        var cascadeDrop = runContext.render(cascade).as(Boolean.class).orElse(false);
 
-        Catalog catalog = catalog(runContext);
+        var catalog = catalog(runContext);
         try {
-            SupportsNamespaces namespaceCatalog = asSupportsNamespaces(catalog);
+            var namespaceCatalog = asSupportsNamespaces(catalog);
 
             if (!namespaceCatalog.namespaceExists(ns)) {
                 if (!skipIfNotExists) {
@@ -108,15 +108,15 @@ public class DropNamespace extends AbstractIcebergTask implements RunnableTask<D
             }
 
             if (cascadeDrop) {
-                List<TableIdentifier> tables = catalog.listTables(ns);
-                for (TableIdentifier table : tables) {
+                var tables = catalog.listTables(ns);
+                for (var table : tables) {
                     runContext.logger().info("Cascade dropping table '{}'", table);
                     catalog.dropTable(table, false);
                 }
             }
 
             runContext.logger().info("Dropping Iceberg namespace '{}'", ns);
-            boolean dropped = namespaceCatalog.dropNamespace(ns);
+            var dropped = namespaceCatalog.dropNamespace(ns);
 
             return Output.builder()
                 .namespace(ns.toString())

@@ -16,15 +16,15 @@ set -euo pipefail
 
 compose_file="docker-compose-ci.yml"
 
-# ── Tear down any previous run so we start with a clean state ───────────────
+# Tear down any previous run so we start with a clean state
 echo "[setup-unit] Resetting Iceberg REST and MinIO containers..."
 docker compose -f "${compose_file}" down -v --remove-orphans >/dev/null 2>&1 || true
 
-# ── Start services ───────────────────────────────────────────────────────────
+# Start services
 echo "[setup-unit] Starting Iceberg REST catalog and MinIO fixture..."
 docker compose -f "${compose_file}" up -d --wait
 
-# ── Verify the Iceberg REST catalog is reachable ─────────────────────────────
+# Verify the Iceberg REST catalog is reachable
 echo "[setup-unit] Verifying Iceberg REST catalog endpoint..."
 for attempt in $(seq 1 30); do
     if curl -sf "http://localhost:8181/v1/config" >/dev/null 2>&1; then
@@ -40,7 +40,7 @@ for attempt in $(seq 1 30); do
     sleep 2
 done
 
-# ── Enable integration tests in subsequent CI workflow steps ─────────────────
+# Enable integration tests in subsequent CI workflow steps
 if [ -n "${GITHUB_ENV:-}" ]; then
     echo "ICEBERG_REST_INTEGRATION=true" >> "${GITHUB_ENV}"
     echo "[setup-unit] Exported ICEBERG_REST_INTEGRATION=true to GITHUB_ENV."

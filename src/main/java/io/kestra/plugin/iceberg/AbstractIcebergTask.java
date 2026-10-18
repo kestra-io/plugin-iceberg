@@ -50,10 +50,11 @@ public abstract class AbstractIcebergTask extends Task {
 
     @Schema(
         title = "Iceberg catalog configuration properties",
-        description = "Key-value configuration map passed directly to the Iceberg catalog. " +
-            "The 'type' key is required and must be set to 'rest'. " +
-            "Use 'uri' to supply the REST catalog endpoint URL. " +
-            "Sensitive values such as 'credential', 'token', and 'secret' are redacted from logs."
+        description = """
+            Key-value configuration map passed directly to the Iceberg catalog. \
+            The 'type' key is required and must be set to 'rest'. \
+            Use 'uri' to supply the REST catalog endpoint URL. \
+            Sensitive values such as 'credential', 'token', and 'secret' are redacted from logs."""
     )
     @NotNull
     @PluginProperty(group = "connection")
@@ -82,12 +83,6 @@ public abstract class AbstractIcebergTask extends Task {
         return safe;
     }
 
-    /**
-     * Closes the catalog safely if it implements AutoCloseable/Closeable to avoid resource and thread leaks.
-     *
-     * @param catalog The catalog instance to close
-     * @param logger  Optional logger for non-fatal close warnings
-     */
     public static void closeCatalog(Catalog catalog, Logger logger) {
         if (catalog instanceof AutoCloseable closeable) {
             try {
@@ -100,13 +95,6 @@ public abstract class AbstractIcebergTask extends Task {
         }
     }
 
-    /**
-     * Parses a dot-separated string into an Iceberg Namespace.
-     * Empty or null string returns an empty Namespace (root).
-     *
-     * @param namespaceStr The dot-separated namespace string (e.g. "analytics" or "analytics.raw")
-     * @return The Iceberg Namespace
-     */
     public static Namespace parseNamespace(String namespaceStr) {
         if (namespaceStr == null || namespaceStr.trim().isEmpty()) {
             return Namespace.empty();
@@ -121,12 +109,6 @@ public abstract class AbstractIcebergTask extends Task {
         return Namespace.of(parts);
     }
 
-    /**
-     * Checks if the catalog implements SupportsNamespaces and casts it, throwing an UnsupportedOperationException if not.
-     *
-     * @param catalog The catalog instance
-     * @return The SupportsNamespaces instance
-     */
     public static SupportsNamespaces asSupportsNamespaces(Catalog catalog) {
         if (catalog instanceof SupportsNamespaces supportsNamespaces) {
             return supportsNamespaces;
@@ -143,13 +125,13 @@ public abstract class AbstractIcebergTask extends Task {
      * @return The initialized Iceberg Catalog
      */
     protected Catalog catalog(RunContext runContext) throws Exception {
-        Map<String, String> rendered = runContext.render(catalogConfig).asMap(String.class, String.class);
-        if (rendered == null || rendered.isEmpty()) {
+        var rCatalogConfig = runContext.render(catalogConfig).asMap(String.class, String.class);
+        if (rCatalogConfig == null || rCatalogConfig.isEmpty()) {
             throw new IllegalArgumentException("'catalogConfig' must be provided with at least 'type' or 'catalog-impl'.");
         }
 
-        String type = rendered.get("type");
-        String catalogImpl = rendered.get("catalog-impl");
+        var type = rCatalogConfig.get("type");
+        var catalogImpl = rCatalogConfig.get("catalog-impl");
 
         if (type == null && catalogImpl == null) {
             throw new IllegalArgumentException(
@@ -158,7 +140,7 @@ public abstract class AbstractIcebergTask extends Task {
         }
 
         if (type != null) {
-            String normalizedType = type.trim().toLowerCase(Locale.ROOT);
+            var normalizedType = type.trim().toLowerCase(Locale.ROOT);
             if (!SUPPORTED_TYPES.contains(normalizedType)) {
                 throw new IllegalArgumentException(
                     "Unsupported catalog type '" + type + "'. Supported types are: " + SUPPORTED_TYPES + " (or supply 'catalog-impl')."
@@ -166,21 +148,16 @@ public abstract class AbstractIcebergTask extends Task {
             }
         }
 
-        // CatalogUtil.buildIcebergCatalog() requires a Hadoop Configuration for Parquet/S3
-        // FileIO initialization. We create a minimal Configuration and populate it with the
-        // rendered catalog properties so that keys such as 's3.endpoint' or 'io-impl' are
-        // picked up by the underlying FileIO. Note: all catalog properties — including any
-        // sensitive keys that were already present in the rendered map — are forwarded here.
-        // Callers are responsible for ensuring that only necessary properties are supplied.
-        Configuration hadoopConf = new Configuration();
-        for (Map.Entry<String, String> entry : rendered.entrySet()) {
+        // FileIO reads s3.*/io-impl from the Hadoop Configuration, so all catalog properties are forwarded.
+        var hadoopConf = new Configuration();
+        for (var entry : rCatalogConfig.entrySet()) {
             if (entry.getKey() != null && entry.getValue() != null) {
                 hadoopConf.set(entry.getKey(), entry.getValue());
             }
         }
 
-        Catalog catalog = CatalogUtil.buildIcebergCatalog("kestra", rendered, hadoopConf);
-        runContext.logger().debug("Initialized Iceberg catalog with configuration: {}", redact(rendered));
+        var catalog = CatalogUtil.buildIcebergCatalog("kestra", rCatalogConfig, hadoopConf);
+        runContext.logger().debug("Initialized Iceberg catalog with configuration: {}", redact(rCatalogConfig));
         return catalog;
     }
 }

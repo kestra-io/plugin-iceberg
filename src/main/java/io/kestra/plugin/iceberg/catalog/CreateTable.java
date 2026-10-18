@@ -144,37 +144,37 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
 
     @Override
     public CreateTable.Output run(RunContext runContext) throws Exception {
-        TableIdentifier identifier = tableIdentifier(runContext);
-        boolean skipIfExists = runContext.render(ifNotExists).as(Boolean.class).orElse(true);
+        var identifier = tableIdentifier(runContext);
+        var skipIfExists = runContext.render(ifNotExists).as(Boolean.class).orElse(true);
 
-        String renderedJson = schemaJson != null
+        var rSchemaJson = schemaJson != null
             ? runContext.render(schemaJson).as(String.class).orElse(null)
             : null;
 
-        List<String> renderedPartitionFields = partitionFields != null
+        var rPartitionFields = partitionFields != null
             ? runContext.render(partitionFields).asList(String.class)
-            : Collections.emptyList();
+            : Collections.<String>emptyList();
 
-        Map<String, String> renderedProps = tableProperties != null
+        var rProperties = tableProperties != null
             ? runContext.render(tableProperties).asMap(String.class, String.class)
-            : Collections.emptyMap();
+            : Collections.<String, String>emptyMap();
 
-        String renderedLoc = location != null
+        var rLocation = location != null
             ? runContext.render(location).as(String.class).orElse(null)
             : null;
 
-        List<Column> renderedColumns = columns != null
+        var rColumns = columns != null
             ? runContext.render(columns).asList(Column.class)
-            : Collections.emptyList();
+            : Collections.<Column>emptyList();
 
-        Catalog catalog = catalog(runContext);
+        var catalog = catalog(runContext);
         try {
             if (catalog.tableExists(identifier)) {
                 if (!skipIfExists) {
                     throw new AlreadyExistsException("Table already exists: " + identifier);
                 }
                 runContext.logger().info("Table '{}' already exists, skipping creation.", identifier);
-                Table table = catalog.loadTable(identifier);
+                var table = catalog.loadTable(identifier);
                 return Output.builder()
                     .table(identifier.toString())
                     .created(false)
@@ -182,19 +182,19 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
                     .build();
             }
 
-            org.apache.iceberg.Schema schema = IcebergSchemaUtils.buildSchema(renderedJson, renderedColumns);
-            PartitionSpec spec = IcebergSchemaUtils.buildPartitionSpec(schema, renderedPartitionFields);
+            var schema = IcebergSchemaUtils.buildSchema(rSchemaJson, rColumns);
+            var spec = IcebergSchemaUtils.buildPartitionSpec(schema, rPartitionFields);
 
             runContext.logger().info("Creating Iceberg table '{}'", identifier);
-            Catalog.TableBuilder builder = catalog.buildTable(identifier, schema)
+            var builder = catalog.buildTable(identifier, schema)
                 .withPartitionSpec(spec)
-                .withProperties(renderedProps != null ? renderedProps : Collections.emptyMap());
+                .withProperties(rProperties != null ? rProperties : Collections.emptyMap());
 
-            if (renderedLoc != null && !renderedLoc.trim().isEmpty()) {
-                builder.withLocation(renderedLoc.trim());
+            if (rLocation != null && !rLocation.trim().isEmpty()) {
+                builder.withLocation(rLocation.trim());
             }
 
-            Table createdTable = builder.create();
+            var createdTable = builder.create();
 
             return Output.builder()
                 .table(identifier.toString())
