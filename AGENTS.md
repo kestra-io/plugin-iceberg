@@ -19,8 +19,6 @@ Single-module plugin focused strictly on REST catalog control-plane operations. 
 
 - `iceberg`: Base task abstraction (`AbstractIcebergTask`, `AbstractIcebergTableTask`) managing REST catalog lifecycle and credential redaction.
 - `iceberg.catalog`: Catalog DDL tasks (`CreateNamespace`, `DropNamespace`, `ListNamespaces`, `CreateTable`, `DropTable`) and schema utilities (`IcebergSchemaUtils`).
-- `iceberg.data`: Reserved for future data-plane tasks.
-- `iceberg.maintenance`: Reserved for future maintenance tasks.
 
 Infrastructure dependencies (Docker Compose services for CI integration testing via `docker-compose-ci.yml`):
 
@@ -55,8 +53,6 @@ plugin-iceberg/
 │   │   ├── DropTable.java
 │   │   ├── IcebergSchemaUtils.java
 │   │   └── ListNamespaces.java
-│   ├── data/
-│   └── maintenance/
 ├── src/test/java/io/kestra/plugin/iceberg/
 │   ├── AbstractIcebergTaskTest.java
 │   ├── RestCatalogConnectivityTest.java

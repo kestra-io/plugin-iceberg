@@ -63,17 +63,14 @@ public abstract class AbstractIcebergTask extends Task {
 
     /**
      * Redacts known sensitive credential keys from a configuration map for safe logging and error reporting.
-     *
-     * @param config The raw configuration map
-     * @return A map with sensitive values replaced by '******'
      */
     public static Map<String, String> redact(Map<String, String> config) {
         if (config == null) {
             return Collections.emptyMap();
         }
-        Map<String, String> safe = new LinkedHashMap<>();
-        for (Map.Entry<String, String> entry : config.entrySet()) {
-            String key = entry.getKey();
+        var safe = new LinkedHashMap<String, String>();
+        for (var entry : config.entrySet()) {
+            var key = entry.getKey();
             if (key != null && SECRET_KEY_PATTERN.matcher(key).find()) {
                 safe.put(key, "******");
             } else {
@@ -99,7 +96,7 @@ public abstract class AbstractIcebergTask extends Task {
         if (namespaceStr == null || namespaceStr.trim().isEmpty()) {
             return Namespace.empty();
         }
-        String[] parts = Arrays.stream(namespaceStr.split("\\."))
+        var parts = Arrays.stream(namespaceStr.split("\\."))
             .map(String::trim)
             .filter(part -> !part.isEmpty())
             .toArray(String[]::new);
@@ -118,12 +115,6 @@ public abstract class AbstractIcebergTask extends Task {
         );
     }
 
-    /**
-     * Resolves, validates, and initializes the Apache Iceberg Catalog instance.
-     *
-     * @param runContext The current Kestra RunContext
-     * @return The initialized Iceberg Catalog
-     */
     protected Catalog catalog(RunContext runContext) throws Exception {
         var rCatalogConfig = runContext.render(catalogConfig).asMap(String.class, String.class);
         if (rCatalogConfig == null || rCatalogConfig.isEmpty()) {

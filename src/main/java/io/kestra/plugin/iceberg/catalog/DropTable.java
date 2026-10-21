@@ -10,8 +10,6 @@ import io.kestra.plugin.iceberg.AbstractIcebergTableTask;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.apache.iceberg.catalog.Catalog;
-import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.exceptions.NoSuchTableException;
 
 @SuperBuilder
@@ -76,7 +74,7 @@ public class DropTable extends AbstractIcebergTableTask implements RunnableTask<
     )
     @Builder.Default
     @PluginProperty(group = "advanced")
-    private Property<Boolean> purge = Property.of(false);
+    private Property<Boolean> purge = Property.ofValue(false);
 
     @Schema(
         title = "If exists",
@@ -85,7 +83,7 @@ public class DropTable extends AbstractIcebergTableTask implements RunnableTask<
     )
     @Builder.Default
     @PluginProperty(group = "reliability")
-    private Property<Boolean> ifExists = Property.of(true);
+    private Property<Boolean> ifExists = Property.ofValue(true);
 
     @Override
     public DropTable.Output run(RunContext runContext) throws Exception {

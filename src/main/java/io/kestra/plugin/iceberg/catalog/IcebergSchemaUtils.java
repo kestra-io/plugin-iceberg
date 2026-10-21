@@ -9,7 +9,6 @@ import org.apache.iceberg.types.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -43,14 +42,14 @@ public final class IcebergSchemaUtils {
             return SchemaParser.fromJson(schemaJson.trim());
         }
 
-        List<Types.NestedField> fields = new ArrayList<>(columns.size());
-        int fieldId = 1;
-        for (CreateTable.Column col : columns) {
+        var fields = new ArrayList<Types.NestedField>(columns.size());
+        var fieldId = 1;
+        for (var col : columns) {
             if (col.getName() == null || col.getName().trim().isEmpty()) {
                 throw new IllegalArgumentException("Column name must not be null or empty.");
             }
-            Type type = parseType(col.getType());
-            boolean required = Boolean.TRUE.equals(col.getRequired());
+            var type = parseType(col.getType());
+            var required = Boolean.TRUE.equals(col.getRequired());
             if (required) {
                 fields.add(Types.NestedField.required(fieldId++, col.getName().trim(), type, col.getDoc()));
             } else {
@@ -68,7 +67,7 @@ public final class IcebergSchemaUtils {
         if (typeStr == null || typeStr.trim().isEmpty()) {
             throw new IllegalArgumentException("Column type must not be null or empty.");
         }
-        String normalized = typeStr.trim().toLowerCase(Locale.ROOT);
+        var normalized = typeStr.trim().toLowerCase(Locale.ROOT);
         switch (normalized) {
             case "boolean":
             case "bool":
@@ -102,15 +101,15 @@ public final class IcebergSchemaUtils {
             case "binary":
                 return Types.BinaryType.get();
             default:
-                Matcher decMatcher = DECIMAL_PATTERN.matcher(normalized);
+                var decMatcher = DECIMAL_PATTERN.matcher(normalized);
                 if (decMatcher.matches()) {
-                    int precision = Integer.parseInt(decMatcher.group(1));
-                    int scale = Integer.parseInt(decMatcher.group(2));
+                    var precision = Integer.parseInt(decMatcher.group(1));
+                    var scale = Integer.parseInt(decMatcher.group(2));
                     return Types.DecimalType.of(precision, scale);
                 }
-                Matcher fixMatcher = FIXED_PATTERN.matcher(normalized);
+                var fixMatcher = FIXED_PATTERN.matcher(normalized);
                 if (fixMatcher.matches()) {
-                    int length = Integer.parseInt(fixMatcher.group(1));
+                    var length = Integer.parseInt(fixMatcher.group(1));
                     return Types.FixedType.ofLength(length);
                 }
                 throw new IllegalArgumentException("Unsupported Iceberg data type: '" + typeStr + "'");
@@ -125,29 +124,29 @@ public final class IcebergSchemaUtils {
             return PartitionSpec.unpartitioned();
         }
 
-        PartitionSpec.Builder builder = PartitionSpec.builderFor(schema);
-        for (String fieldExpr : partitionFields) {
+        var builder = PartitionSpec.builderFor(schema);
+        for (var fieldExpr : partitionFields) {
             if (fieldExpr == null || fieldExpr.trim().isEmpty()) {
                 continue;
             }
-            String expr = fieldExpr.trim();
-            Matcher bucketMatcher = BUCKET_PATTERN.matcher(expr);
-            Matcher truncateMatcher = TRUNCATE_PATTERN.matcher(expr);
-            Matcher transformMatcher = TRANSFORM_PATTERN.matcher(expr);
+            var expr = fieldExpr.trim();
+            var bucketMatcher = BUCKET_PATTERN.matcher(expr);
+            var truncateMatcher = TRUNCATE_PATTERN.matcher(expr);
+            var transformMatcher = TRANSFORM_PATTERN.matcher(expr);
 
             String col;
             if (bucketMatcher.matches()) {
-                int numBuckets = Integer.parseInt(bucketMatcher.group(1));
+                var numBuckets = Integer.parseInt(bucketMatcher.group(1));
                 col = bucketMatcher.group(2);
                 validateFieldExists(schema, col);
                 builder.bucket(col, numBuckets);
             } else if (truncateMatcher.matches()) {
-                int width = Integer.parseInt(truncateMatcher.group(1));
+                var width = Integer.parseInt(truncateMatcher.group(1));
                 col = truncateMatcher.group(2);
                 validateFieldExists(schema, col);
                 builder.truncate(col, width);
             } else if (transformMatcher.matches()) {
-                String transform = transformMatcher.group(1).toLowerCase(Locale.ROOT);
+                var transform = transformMatcher.group(1).toLowerCase(Locale.ROOT);
                 col = transformMatcher.group(2);
                 validateFieldExists(schema, col);
                 switch (transform) {

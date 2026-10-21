@@ -11,13 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.apache.iceberg.catalog.Catalog;
-import org.apache.iceberg.catalog.Namespace;
-import org.apache.iceberg.catalog.SupportsNamespaces;
-import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.exceptions.NoSuchNamespaceException;
-
-import java.util.List;
 
 @SuperBuilder
 @ToString
@@ -68,7 +62,7 @@ public class DropNamespace extends AbstractIcebergTask implements RunnableTask<D
     )
     @Builder.Default
     @PluginProperty(group = "reliability")
-    private Property<Boolean> ifExists = Property.of(true);
+    private Property<Boolean> ifExists = Property.ofValue(true);
 
     @Schema(
         title = "Cascade drop",
@@ -77,7 +71,7 @@ public class DropNamespace extends AbstractIcebergTask implements RunnableTask<D
     )
     @Builder.Default
     @PluginProperty(group = "advanced")
-    private Property<Boolean> cascade = Property.of(false);
+    private Property<Boolean> cascade = Property.ofValue(false);
 
     @Override
     public DropNamespace.Output run(RunContext runContext) throws Exception {

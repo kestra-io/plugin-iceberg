@@ -10,6 +10,8 @@ You can automate data lake control-plane operations directly from your Kestra wo
 
 All Iceberg tasks configure catalog access through the `catalogConfig` property. The current release supports the Apache Iceberg REST catalog (`type: rest`).
 
+To manage credentials securely without hardcoding sensitive values into flow code, use Kestra [secrets](https://kestra.io/docs/concepts/secret). You can also configure default catalog parameters across tasks using [plugin defaults](https://kestra.io/docs/workflow-components/plugin-defaults).
+
 ### Catalog Configuration (`catalogConfig`)
 
 `catalogConfig` is a key-value map passed directly to the Iceberg catalog client:
@@ -107,14 +109,16 @@ Creates a new Apache Iceberg table in the catalog with column definitions or raw
 **Supported properties:**
 - `namespace` (required): The namespace or database of the Iceberg table (e.g. `analytics`).
 - `tableName` (required): The name of the Iceberg table.
-- `columns` (optional): List of column definitions with `name` (required), `type` (required, e.g. `string`, `long`, `timestamptz`), `required` (optional, default: `false`), and `doc` (optional).
-- `schemaJson` (optional): Raw Iceberg schema in JSON format. Takes precedence over `columns` when specified.
+- `columns` (optional): List of column definitions with `name` (required), `type` (required, e.g. `string`, `long`, `timestamptz`), `required` (optional, default: `false`), and `doc` (optional). Mutually exclusive with `schemaJson`; exactly one must be supplied.
+- `schemaJson` (optional): Raw Iceberg schema in JSON format. Mutually exclusive with `columns`; exactly one must be supplied.
 - `partitionFields` (optional): List of column names or transform expressions for partitioning (e.g. `days(event_time)`, `identity(region)`, `bucket(16, id)`).
 - `tableProperties` (optional): Table configuration properties (e.g. `write.format.default: parquet`).
 - `location` (optional): Custom storage location (URI) for table data and metadata.
 - `ifNotExists` (optional, default: `true`): If `true`, does not fail if the table already exists.
 
-Example:
+Examples:
+
+Create an Iceberg table with column definitions and partitioning:
 
 ```yaml
 id: create_table
@@ -142,6 +146,28 @@ partitionFields:
   - "identity(region)"
 tableProperties:
   write.format.default: parquet
+ifNotExists: true
+```
+
+Create an Iceberg table using raw schema JSON:
+
+```yaml
+id: create_table_json
+type: io.kestra.plugin.iceberg.catalog.CreateTable
+catalogConfig:
+  type: rest
+  uri: "https://iceberg-catalog.example.com:8181"
+  credential: "{{ secret('ICEBERG_CREDENTIAL') }}"
+namespace: "analytics"
+tableName: "raw_events"
+schemaJson: |
+  {
+    "type": "struct",
+    "fields": [
+      {"id": 1, "name": "id", "required": true, "type": "long"},
+      {"id": 2, "name": "payload", "required": false, "type": "string"}
+    ]
+  }
 ifNotExists: true
 ```
 

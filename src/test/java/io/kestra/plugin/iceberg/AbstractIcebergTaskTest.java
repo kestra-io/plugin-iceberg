@@ -99,7 +99,7 @@ class AbstractIcebergTaskTest {
     void shouldExcludeCatalogConfigFromToString() {
         DummyIcebergTask task = DummyIcebergTask.builder()
             .id("test-task")
-            .catalogConfig(Property.of(Map.of(
+            .catalogConfig(Property.ofValue(Map.of(
                 "type", "rest",
                 "uri", "https://iceberg.example.com",
                 "credential", "super-secret-token"
@@ -150,8 +150,8 @@ class AbstractIcebergTaskTest {
         RunContext runContext = runContextFactory.of();
 
         DummyIcebergTableTask task = DummyIcebergTableTask.builder()
-            .namespace(Property.of("analytics"))
-            .tableName(Property.of("events"))
+            .namespace(Property.ofValue("analytics"))
+            .tableName(Property.ofValue("events"))
             .build();
 
         TableIdentifier identifier = task.testTableIdentifier(runContext);
@@ -165,8 +165,8 @@ class AbstractIcebergTaskTest {
         RunContext runContext = runContextFactory.of();
 
         DummyIcebergTableTask task = DummyIcebergTableTask.builder()
-            .namespace(Property.of("analytics.raw.v1"))
-            .tableName(Property.of("pageviews"))
+            .namespace(Property.ofValue("analytics.raw.v1"))
+            .tableName(Property.ofValue("pageviews"))
             .build();
 
         TableIdentifier identifier = task.testTableIdentifier(runContext);

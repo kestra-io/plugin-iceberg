@@ -11,10 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.apache.iceberg.PartitionSpec;
-import org.apache.iceberg.Table;
-import org.apache.iceberg.catalog.Catalog;
-import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.exceptions.AlreadyExistsException;
 
 import java.util.Collections;
@@ -100,14 +96,14 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
 
     @Schema(
         title = "Columns",
-        description = "List of column definitions specifying name, type, and optional required/doc flags."
+        description = "List of column definitions specifying name, type, and optional required/doc flags. Mutually exclusive with 'schemaJson'; exactly one must be supplied."
     )
     @PluginProperty(group = "main")
     private Property<List<Column>> columns;
 
     @Schema(
         title = "Schema JSON",
-        description = "Raw Iceberg schema in JSON format. Takes precedence over 'columns' when specified."
+        description = "Raw Iceberg schema in JSON format. Mutually exclusive with 'columns'; exactly one must be supplied."
     )
     @PluginProperty(group = "advanced")
     private Property<String> schemaJson;
@@ -140,7 +136,7 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
     )
     @Builder.Default
     @PluginProperty(group = "reliability")
-    private Property<Boolean> ifNotExists = Property.of(true);
+    private Property<Boolean> ifNotExists = Property.ofValue(true);
 
     @Override
     public CreateTable.Output run(RunContext runContext) throws Exception {

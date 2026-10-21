@@ -27,7 +27,7 @@ class RestCatalogConnectivityTest {
     @Test
     void shouldAttemptRestCatalogConnectionAndNotLeakTokenOnFailure() {
         AbstractIcebergTaskTest.DummyIcebergTask task = AbstractIcebergTaskTest.DummyIcebergTask.builder()
-            .catalogConfig(Property.of(Map.of(
+            .catalogConfig(Property.ofValue(Map.of(
                 "type", "rest",
                 "uri", "http://127.0.0.1:58181/unreachable",
                 "token", "super-secret-token-12345"
@@ -57,7 +57,7 @@ class RestCatalogConnectivityTest {
         );
 
         AbstractIcebergTaskTest.DummyIcebergTask task = AbstractIcebergTaskTest.DummyIcebergTask.builder()
-            .catalogConfig(Property.of(Map.of(
+            .catalogConfig(Property.ofValue(Map.of(
                 "type", "rest",
                 "uri", restUri
             )))

@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
 
 /**
@@ -42,10 +41,7 @@ public abstract class AbstractIcebergTableTask extends AbstractIcebergTask {
 
     /**
      * Resolves the TableIdentifier by rendering namespace and tableName expressions.
-     * Supports dot-separated hierarchical namespaces (e.g. 'analytics.raw' -> Namespace.of("analytics", "raw")).
-     *
-     * @param runContext The current Kestra RunContext
-     * @return The Iceberg TableIdentifier
+     * Supports dot-separated hierarchical namespaces (e.g. 'analytics.raw').
      */
     protected TableIdentifier tableIdentifier(RunContext runContext) throws Exception {
         var rNamespace = runContext.render(namespace).as(String.class).orElseThrow(

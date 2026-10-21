@@ -10,9 +10,7 @@ import io.kestra.plugin.iceberg.AbstractIcebergTask;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
-import org.apache.iceberg.catalog.SupportsNamespaces;
 
 import java.util.Collections;
 import java.util.List;

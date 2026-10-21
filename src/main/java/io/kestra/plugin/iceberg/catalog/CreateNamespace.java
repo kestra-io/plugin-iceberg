@@ -11,9 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.apache.iceberg.catalog.Catalog;
-import org.apache.iceberg.catalog.Namespace;
-import org.apache.iceberg.catalog.SupportsNamespaces;
 import org.apache.iceberg.exceptions.AlreadyExistsException;
 
 import java.util.Collections;
@@ -74,7 +71,7 @@ public class CreateNamespace extends AbstractIcebergTask implements RunnableTask
     )
     @Builder.Default
     @PluginProperty(group = "reliability")
-    private Property<Boolean> ifNotExists = Property.of(true);
+    private Property<Boolean> ifNotExists = Property.ofValue(true);
 
     @Override
     public CreateNamespace.Output run(RunContext runContext) throws Exception {
