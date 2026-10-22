@@ -20,7 +20,8 @@ import org.apache.iceberg.exceptions.NoSuchNamespaceException;
 @NoArgsConstructor
 @Schema(
     title = "Drop an Apache Iceberg namespace",
-    description = "Drops an existing namespace (database) from the specified Iceberg catalog."
+    description = """
+        Drops an existing namespace (database) from the specified Iceberg catalog."""
 )
 @Plugin(
     examples = {
@@ -49,7 +50,9 @@ public class DropNamespace extends AbstractIcebergTask implements RunnableTask<D
 
     @Schema(
         title = "Namespace name",
-        description = "The namespace or database to drop (e.g. 'analytics' or multi-level 'analytics.scratch')."
+        description = """
+            The namespace or database to drop \
+            (e.g. 'analytics' or multi-level 'analytics.scratch')."""
     )
     @NotNull
     @PluginProperty(group = "main")
@@ -57,7 +60,8 @@ public class DropNamespace extends AbstractIcebergTask implements RunnableTask<D
 
     @Schema(
         title = "If exists",
-        description = "If true, do not fail when the namespace does not exist.",
+        description = """
+            If true, do not fail when the namespace does not exist.""",
         defaultValue = "true"
     )
     @Builder.Default
@@ -66,7 +70,8 @@ public class DropNamespace extends AbstractIcebergTask implements RunnableTask<D
 
     @Schema(
         title = "Cascade drop",
-        description = "If true, drops all tables within the namespace before dropping the namespace itself.",
+        description = """
+            If true, drops all tables within the namespace before dropping the namespace itself.""",
         defaultValue = "false"
     )
     @Builder.Default
@@ -126,13 +131,15 @@ public class DropNamespace extends AbstractIcebergTask implements RunnableTask<D
     public static class Output implements io.kestra.core.models.tasks.Output {
         @Schema(
             title = "Namespace",
-            description = "The namespace that was evaluated."
+            description = """
+                The namespace that was evaluated."""
         )
         private final String namespace;
 
         @Schema(
             title = "Dropped",
-            description = "Whether the namespace was dropped (false if it did not exist)."
+            description = """
+                Whether the namespace was dropped (false if it did not exist)."""
         )
         private final Boolean dropped;
     }

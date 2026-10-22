@@ -22,7 +22,9 @@ import java.util.List;
 @NoArgsConstructor
 @Schema(
     title = "List Apache Iceberg namespaces",
-    description = "Lists child namespaces under a parent namespace, or top-level namespaces if none specified."
+    description = """
+        Lists child namespaces under a parent namespace, or top-level \
+        namespaces if none specified."""
 )
 @Plugin(
     examples = {
@@ -65,7 +67,9 @@ public class ListNamespaces extends AbstractIcebergTask implements RunnableTask<
 
     @Schema(
         title = "Parent namespace",
-        description = "Optional parent namespace to list child namespaces under. If omitted or empty, lists top-level namespaces."
+        description = """
+            Optional parent namespace to list child namespaces under. \
+            If omitted or empty, lists top-level namespaces."""
     )
     @PluginProperty(group = "main")
     private Property<String> namespace;
@@ -107,7 +111,8 @@ public class ListNamespaces extends AbstractIcebergTask implements RunnableTask<
     public static class Output implements io.kestra.core.models.tasks.Output {
         @Schema(
             title = "Namespaces",
-            description = "List of namespace strings found in the catalog."
+            description = """
+                List of namespace strings found in the catalog."""
         )
         private final List<String> namespaces;
     }

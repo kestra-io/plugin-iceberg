@@ -24,7 +24,9 @@ import java.util.Map;
 @NoArgsConstructor
 @Schema(
     title = "Create an Apache Iceberg table",
-    description = "Creates a new Apache Iceberg table in the catalog with column definitions or raw schema JSON, partition specs, and properties."
+    description = """
+        Creates a new Apache Iceberg table in the catalog with column \
+        definitions or raw schema JSON, partition specs, and properties."""
 )
 @Plugin(
     examples = {
@@ -96,42 +98,53 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
 
     @Schema(
         title = "Columns",
-        description = "List of column definitions specifying name, type, and optional required/doc flags. Mutually exclusive with 'schemaJson'; exactly one must be supplied."
+        description = """
+            List of column definitions specifying name, type, and optional \
+            required/doc flags. Mutually exclusive with 'schemaJson'; \
+            exactly one must be supplied."""
     )
     @PluginProperty(group = "main")
     private Property<List<Column>> columns;
 
     @Schema(
         title = "Schema JSON",
-        description = "Raw Iceberg schema in JSON format. Mutually exclusive with 'columns'; exactly one must be supplied."
+        description = """
+            Raw Iceberg schema in JSON format. Mutually exclusive with \
+            'columns'; exactly one must be supplied."""
     )
     @PluginProperty(group = "advanced")
     private Property<String> schemaJson;
 
     @Schema(
         title = "Partition fields",
-        description = "Optional list of column names or transforms for partitioning (e.g. 'region', 'days(event_time)', 'bucket(16, id)')."
+        description = """
+            Optional list of column names or transforms for partitioning \
+            (e.g. 'region', 'days(event_time)', 'bucket(16, id)')."""
     )
     @PluginProperty(group = "advanced")
     private Property<List<String>> partitionFields;
 
     @Schema(
         title = "Table properties",
-        description = "Optional table configuration properties (e.g. 'write.format.default: parquet')."
+        description = """
+            Optional table configuration properties \
+            (e.g. 'write.format.default: parquet')."""
     )
     @PluginProperty(group = "advanced")
     private Property<Map<String, String>> tableProperties;
 
     @Schema(
         title = "Table location",
-        description = "Optional custom storage location (URI) for table data and metadata."
+        description = """
+            Optional custom storage location (URI) for table data and metadata."""
     )
     @PluginProperty(group = "advanced")
     private Property<String> location;
 
     @Schema(
         title = "If not exists",
-        description = "If true, do not fail if the table already exists.",
+        description = """
+            If true, do not fail if the table already exists.""",
         defaultValue = "true"
     )
     @Builder.Default
@@ -207,22 +220,38 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Column {
-        @Schema(title = "Column name", description = "Name of the column")
+        @Schema(
+            title = "Column name",
+            description = """
+                Name of the column."""
+        )
         @NotNull
         private String name;
 
         @Schema(
             title = "Data type",
-            description = "Iceberg data type: boolean, int/integer, long, float, double, date, time, timestamp, timestamptz, string, uuid, binary, decimal(p,s), fixed(l)"
+            description = """
+                Iceberg data type: boolean, int/integer, long, float, double, \
+                date, time, timestamp, timestamptz, string, uuid, binary, \
+                decimal(p,s), fixed(l)."""
         )
         @NotNull
         private String type;
 
-        @Schema(title = "Required", description = "Whether the field is required (non-null)", defaultValue = "false")
+        @Schema(
+            title = "Required",
+            description = """
+                Whether the field is required (non-null).""",
+            defaultValue = "false"
+        )
         @Builder.Default
         private Boolean required = false;
 
-        @Schema(title = "Documentation", description = "Optional column documentation or comment")
+        @Schema(
+            title = "Documentation",
+            description = """
+                Optional column documentation or comment."""
+        )
         private String doc;
     }
 
@@ -231,19 +260,22 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
     public static class Output implements io.kestra.core.models.tasks.Output {
         @Schema(
             title = "Table identifier",
-            description = "The full table identifier (namespace.table)."
+            description = """
+                The full table identifier (namespace.table)."""
         )
         private final String table;
 
         @Schema(
             title = "Created",
-            description = "Whether the table was created (false if it already existed)."
+            description = """
+                Whether the table was created (false if it already existed)."""
         )
         private final Boolean created;
 
         @Schema(
             title = "Table location",
-            description = "The storage location of the table."
+            description = """
+                The storage location of the table."""
         )
         private final String location;
     }

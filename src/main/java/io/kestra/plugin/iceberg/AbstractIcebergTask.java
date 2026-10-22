@@ -37,11 +37,6 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 public abstract class AbstractIcebergTask extends Task {
 
-    /**
-     * Catalog types supported in this release. Only the REST catalog is included
-     * in Phase 1; additional types (Glue, Hive, Nessie, Hadoop) are planned for
-     * future phases once each integration is validated end-to-end.
-     */
     public static final Set<String> SUPPORTED_TYPES = Set.of("rest");
 
     private static final Pattern SECRET_KEY_PATTERN = Pattern.compile(

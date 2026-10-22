@@ -24,12 +24,9 @@ public final class IcebergSchemaUtils {
 
     private IcebergSchemaUtils() {}
 
-    /**
-     * Parses an Iceberg Schema from raw JSON or builds it from column definitions.
-     */
     public static Schema buildSchema(String schemaJson, List<CreateTable.Column> columns) {
-        boolean hasJson = schemaJson != null && !schemaJson.trim().isEmpty();
-        boolean hasColumns = columns != null && !columns.isEmpty();
+        var hasJson = schemaJson != null && !schemaJson.trim().isEmpty();
+        var hasColumns = columns != null && !columns.isEmpty();
 
         if (hasJson && hasColumns) {
             throw new IllegalArgumentException("Cannot provide both 'schemaJson' and 'columns'. Please specify only one.");
@@ -60,9 +57,6 @@ public final class IcebergSchemaUtils {
         return new Schema(fields);
     }
 
-    /**
-     * Parses standard string data type representation to an Iceberg Type.
-     */
     public static Type parseType(String typeStr) {
         if (typeStr == null || typeStr.trim().isEmpty()) {
             throw new IllegalArgumentException("Column type must not be null or empty.");
@@ -116,9 +110,6 @@ public final class IcebergSchemaUtils {
         }
     }
 
-    /**
-     * Builds an Iceberg PartitionSpec from partition field definitions.
-     */
     public static PartitionSpec buildPartitionSpec(Schema schema, List<String> partitionFields) {
         if (partitionFields == null || partitionFields.isEmpty()) {
             return PartitionSpec.unpartitioned();
