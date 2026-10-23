@@ -1,0 +1,33 @@
+services:
+  rest:
+    # No 1.11.0 fixture image is published yet; 1.10.1 is the latest release tag (REST protocol is compatible with iceberg-bom 1.11.0).
+    image: apache/iceberg-rest-fixture:1.10.1
+    ports:
+      - "8181:8181"
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=password
+      - AWS_REGION=us-east-1
+      - CATALOG_WAREHOUSE=s3://warehouse/
+      - CATALOG_IO__IMPL=org.apache.iceberg.aws.s3.S3FileIO
+      - CATALOG_S3__ENDPOINT=http://minio:9000
+      - CATALOG_S3__PATH__STYLE__ACCESS=true
+    depends_on:
+      - minio
+
+  minio:
+    # MinIO no longer publishes images to Docker Hub / quay.io; Chainguard's build is still pullable anonymously.
+    # Chainguard's free tier only publishes `latest`, so the image is pinned by digest.
+    image: cgr.dev/chainguard/minio:latest@sha256:2136d593beacf4461187035eca949fe49abd589d5079735025c711ca58fee0c8
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
+    # Pre-create the warehouse bucket as a directory under /data (MinIO stores buckets as folders),
+    # which removes the need for a separate MinIO client container.
+    entrypoint:
+      - sh
+      - -c
+      - "mkdir -p /data/warehouse && exec minio server /data --console-address ':9001'"
