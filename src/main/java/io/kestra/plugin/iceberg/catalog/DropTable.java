@@ -82,8 +82,7 @@ public class DropTable extends AbstractIcebergTableTask implements RunnableTask<
 
     @Schema(
         title = "If exists",
-        description = """
-            If true, do not fail when the table does not exist.""",
+        description = "If true, do not fail when the table does not exist.",
         defaultValue = "true"
     )
     @Builder.Default
@@ -126,15 +125,13 @@ public class DropTable extends AbstractIcebergTableTask implements RunnableTask<
     public static class Output implements io.kestra.core.models.tasks.Output {
         @Schema(
             title = "Table identifier",
-            description = """
-                The full table identifier (namespace.table)."""
+            description = "The full table identifier (namespace.table)."
         )
         private final String table;
 
         @Schema(
             title = "Dropped",
-            description = """
-                Whether the table was dropped (false if it did not exist)."""
+            description = "Whether the table was dropped (false if it did not exist)."
         )
         private final Boolean dropped;
     }

@@ -60,8 +60,7 @@ public class DropNamespace extends AbstractIcebergTask implements RunnableTask<D
 
     @Schema(
         title = "If exists",
-        description = """
-            If true, do not fail when the namespace does not exist.""",
+        description = "If true, do not fail when the namespace does not exist.",
         defaultValue = "true"
     )
     @Builder.Default
@@ -131,15 +130,13 @@ public class DropNamespace extends AbstractIcebergTask implements RunnableTask<D
     public static class Output implements io.kestra.core.models.tasks.Output {
         @Schema(
             title = "Namespace",
-            description = """
-                The namespace that was evaluated."""
+            description = "The namespace that was evaluated."
         )
         private final String namespace;
 
         @Schema(
             title = "Dropped",
-            description = """
-                Whether the namespace was dropped (false if it did not exist)."""
+            description = "Whether the namespace was dropped (false if it did not exist)."
         )
         private final Boolean dropped;
     }

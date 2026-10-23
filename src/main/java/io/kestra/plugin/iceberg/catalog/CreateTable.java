@@ -135,16 +135,14 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
 
     @Schema(
         title = "Table location",
-        description = """
-            Optional custom storage location (URI) for table data and metadata."""
+        description = "Optional custom storage location (URI) for table data and metadata."
     )
     @PluginProperty(group = "advanced")
     private Property<String> location;
 
     @Schema(
         title = "If not exists",
-        description = """
-            If true, do not fail if the table already exists.""",
+        description = "If true, do not fail if the table already exists.",
         defaultValue = "true"
     )
     @Builder.Default
@@ -220,11 +218,7 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Column {
-        @Schema(
-            title = "Column name",
-            description = """
-                Name of the column."""
-        )
+        @Schema(title = "Column name", description = "Name of the column")
         @NotNull
         private String name;
 
@@ -238,20 +232,11 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
         @NotNull
         private String type;
 
-        @Schema(
-            title = "Required",
-            description = """
-                Whether the field is required (non-null).""",
-            defaultValue = "false"
-        )
+        @Schema(title = "Required", description = "Whether the field is required (non-null)", defaultValue = "false")
         @Builder.Default
         private Boolean required = false;
 
-        @Schema(
-            title = "Documentation",
-            description = """
-                Optional column documentation or comment."""
-        )
+        @Schema(title = "Documentation", description = "Optional column documentation or comment")
         private String doc;
     }
 
@@ -260,22 +245,19 @@ public class CreateTable extends AbstractIcebergTableTask implements RunnableTas
     public static class Output implements io.kestra.core.models.tasks.Output {
         @Schema(
             title = "Table identifier",
-            description = """
-                The full table identifier (namespace.table)."""
+            description = "The full table identifier (namespace.table)."
         )
         private final String table;
 
         @Schema(
             title = "Created",
-            description = """
-                Whether the table was created (false if it already existed)."""
+            description = "Whether the table was created (false if it already existed)."
         )
         private final Boolean created;
 
         @Schema(
             title = "Table location",
-            description = """
-                The storage location of the table."""
+            description = "The storage location of the table."
         )
         private final String location;
     }

@@ -111,8 +111,7 @@ public class ListNamespaces extends AbstractIcebergTask implements RunnableTask<
     public static class Output implements io.kestra.core.models.tasks.Output {
         @Schema(
             title = "Namespaces",
-            description = """
-                List of namespace strings found in the catalog."""
+            description = "List of namespace strings found in the catalog."
         )
         private final List<String> namespaces;
     }

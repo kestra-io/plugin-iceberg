@@ -35,13 +35,15 @@ public abstract class AbstractIcebergTableTask extends AbstractIcebergTask {
 
     @Schema(
         title = "Table name",
-        description = """
-            The name of the Iceberg table."""
+        description = "The name of the Iceberg table."
     )
     @NotNull
     @PluginProperty(group = "main")
     protected Property<String> tableName;
 
+    /**
+     * Supports dot-separated hierarchical namespaces (e.g. 'analytics.raw').
+     */
     protected TableIdentifier tableIdentifier(RunContext runContext) throws Exception {
         var rNamespace = runContext.render(namespace).as(String.class).orElseThrow(
             () -> new IllegalArgumentException("'namespace' must not be null or empty.")

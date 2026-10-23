@@ -71,8 +71,7 @@ public class CreateNamespace extends AbstractIcebergTask implements RunnableTask
 
     @Schema(
         title = "If not exists",
-        description = """
-            If true, skips creation without failing when the namespace already exists.""",
+        description = "If true, skips creation without failing when the namespace already exists.",
         defaultValue = "true"
     )
     @Builder.Default
@@ -129,22 +128,19 @@ public class CreateNamespace extends AbstractIcebergTask implements RunnableTask
     public static class Output implements io.kestra.core.models.tasks.Output {
         @Schema(
             title = "Namespace",
-            description = """
-                The namespace that was evaluated."""
+            description = "The namespace that was evaluated."
         )
         private final String namespace;
 
         @Schema(
             title = "Created",
-            description = """
-                Whether the namespace was created (false if it already existed)."""
+            description = "Whether the namespace was created (false if it already existed)."
         )
         private final Boolean created;
 
         @Schema(
             title = "Properties",
-            description = """
-                The properties associated with the namespace."""
+            description = "The properties associated with the namespace."
         )
         private final Map<String, String> properties;
     }
