@@ -81,6 +81,11 @@ dependencies {
     }
 }
 
+configurations.all {
+    // SEC-0370: snappy-java comes via parquet-hadoop and hadoop-common, remove once the Kestra platform ships >= 1.1.10.9.
+    resolutionStrategy.force 'org.xerial.snappy:snappy-java:1.1.10.12'
+}
+
 
 
 /**********************************************************************************************************************\
